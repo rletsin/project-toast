@@ -3,32 +3,20 @@ import React from 'react';
 import Button from '../Button';
 import styles from './ToastPlayground.module.css';
 import ToastShelf from '../ToastShelf/ToastShelf';
+import { ToastContext } from '../ToastProvider';
+
 
 const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 
 function ToastPlayground() {
+  const { toasts, addNewToast } = React.useContext(ToastContext);
   const [selectedVariant, setSelectedVariant] = React.useState(VARIANT_OPTIONS[0]);
   const [message, setMessage] = React.useState('');
-  const [toastStack, setToastStack] = React.useState([]);
 
-  function addNewToast() {
-    setToastStack([...toastStack, {
-      message,
-      variant: selectedVariant,
-      id: crypto.randomUUID(),
-    }]);
+  function pushToast() {
+    addNewToast(message, selectedVariant);
     setMessage('');
     setSelectedVariant('notice');
-  }
-
-  function closeToast(id) {
-    const index = toastStack.findIndex(t => t.id === id);
-    console.log(`Closing toast with id ${id} at index ${index}`);
-    if (index !== -1) {
-      const updatedArray = [...toastStack];
-      updatedArray.splice(index, 1)
-      setToastStack(updatedArray);
-    }
   }
 
   return (
@@ -38,12 +26,12 @@ function ToastPlayground() {
         <h1>Toast Playground</h1>
       </header>
       {
-        toastStack.length > 0 && <ToastShelf toasts={toastStack} onCloseToast={closeToast} />
+        toasts.length > 0 && <ToastShelf />
       }
       <form
         onSubmit={(event) => {
-          event.preventDefault()
-          addNewToast()
+          event.preventDefault();
+          pushToast();
         }}
         className={styles.controlsWrapper}
       >
