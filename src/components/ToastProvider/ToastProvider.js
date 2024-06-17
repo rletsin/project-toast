@@ -3,7 +3,11 @@ import useEscapeKey from '../../hooks/useEscapeKey';
 export const ToastContext = React.createContext();
 
 function ToastProvider({ children }) {
-  useEscapeKey(() => closeToast('all'));
+  const handleEscape = React.useCallback(() => {
+    setToasts([]);
+  }, []);
+
+  useEscapeKey(handleEscape);
   const [toasts, setToasts] = React.useState([]);
 
   const addNewToast = React.useCallback((message, variant) => {
@@ -20,10 +24,6 @@ function ToastProvider({ children }) {
   }, [toasts]);
 
   const closeToast = React.useCallback((id) => {
-    if (id === 'all') {
-      setToasts([]);
-      return;
-    }
     const index = toasts.findIndex(t => t.id === id);
     console.log(`Closing toast with id ${id} at index ${index}`);
 
