@@ -2,6 +2,7 @@ import React from 'react';
 export const ToastContext = React.createContext();
 
 function ToastProvider({ children }) {
+  useEscapeKey(() => closeToast('all'));
   const [toasts, setToasts] = React.useState([]);
 
   const addNewToast = React.useCallback((message, variant) => {
@@ -18,6 +19,10 @@ function ToastProvider({ children }) {
   }, [toasts]);
 
   const closeToast = React.useCallback((id) => {
+    if (id === 'all') {
+      setToasts([]);
+      return;
+    }
     const index = toasts.findIndex(t => t.id === id);
     console.log(`Closing toast with id ${id} at index ${index}`);
 
@@ -35,4 +40,19 @@ function ToastProvider({ children }) {
   );
 }
 
+function useEscapeKey(callback) {
+  React.useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.code === 'Escape') {
+        callback();
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [callback]);
+}
 export default ToastProvider;
