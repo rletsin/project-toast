@@ -23,8 +23,6 @@ function ToastProvider({ children }) {
     setToasts(nextToasts);
   }, [toasts]);
 
-
-
   const closeToast = React.useCallback((id) => {
     const index = toasts.findIndex(t => t.id === id);
     console.log(`Closing toast with id ${id} at index ${index}`);
